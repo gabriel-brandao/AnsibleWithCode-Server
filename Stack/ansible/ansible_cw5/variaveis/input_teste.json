@@ -1,0 +1,29 @@
+{
+    "ANSIBLE_MODULE_ARGS": {
+        
+        "username": "admin",
+        "password": "ufnpwl10cms",
+        "privilege": "512900",
+        "hostname": "172.28.0.210",
+
+        "vlans_config": [{  "vlanID": 4,   
+                            "description": "de teste",
+                            "interface_vlan": "-172.28.0.63/65",
+                            "ports_trunk": [5, 6],  
+                            "ports_access": [-7, 8]
+                        }, 
+                        {  "vlanID": 4094,   
+                            "description": "",
+                            "interface_vlan": "-84.28.0.63/69",
+                            "ports_trunk": [5, 6, 48],  
+                            "ports_access": [-7, 8, 9]
+                        }, 
+                        {  "vlanID": 12,   
+                            "description": "adm",
+                            "interface_vlan": "+172.28.0.63/69",
+                            "ports_trunk": [],  
+                            "ports_access": [9]
+                        }
+                    ]
+    }
+}
