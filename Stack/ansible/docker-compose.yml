@@ -1,0 +1,114 @@
+#O nome da stack será igual ao nome do diretorio raiz
+services: 
+  code-server:
+    container_name: code-server
+    hostname: CodeServer
+    image: lscr.io/linuxserver/code-server:latest
+    
+    volumes:
+      #mapear para volumes compartilhado
+      - bind-host-ansible:/ansible_cw5:rw
+    
+    networks:
+      network-bridge:
+        ipv4_address: 172.16.2.3
+    # ports:
+    #  - 8081:8443
+
+    #sera reiniciado auto a menos que seja parado manualmente
+    restart: unless-stopped
+    
+    depends_on:
+      - ansible
+
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - PASSWORD=${PASS} #para GUI
+      - SUDO_PASSWORD=${ROOT_PASS} #senha de privilegio
+      - PROXY_DOMAIN=code-server.gabriel 
+      - DEFAULT_WORKSPACE=/ansible_cw5 #diretorio de workspace
+      - TZ=America/Campo_Grande
+  ansible:
+    container_name: ansible-v4
+    hostname: Ansible
+    build: 
+      context: ./ansible #caminho para o dockerfile do ansible
+      dockerfile: dockerfile-ansible
+    
+    volumes:
+      - bind-host-ansible:/ansible/ansible_cw5:ro
+      - volume-docker:/home/gabriel/Documentos/DevOps/stacks/ansible/teste-ansible-volume:ro
+    working_dir: /ansible/ansible_cw5
+
+    networks:
+      network-bridge:
+        ipv4_address: 172.16.2.4
+
+    #container será sempre reiniciando sempre que parar
+    restart: always
+
+    #variaveis de ambiente comum a todos os container, a menos que sejam sobreescritos
+    environment:
+      - TZ=America/Campo_Grande
+
+    #equivale a "docker run -it IDimage bash" 
+    stdin_open: true   
+    tty: true 
+    command: bash
+
+  nginx:
+    image: nginx:latest
+    hostname: NGINX
+    volumes:
+      - bind-host-nginx:/etc/nginx/
+    
+    #executa tudo em um memso comando, a geração dos certificados e matem ngix rodando em 1º plano
+    command: sh -c "chmod +x /etc/nginx/openssl.sh && /etc/nginx/openssl.sh && nginx -g 'daemon off;'"
+
+
+    networks:
+      network-bridge:
+        ipv4_address: 172.16.2.2
+    
+    ports:
+      - 8080:80
+      - 8443:443
+
+    depends_on:
+      - code-server
+
+    
+
+
+#cria volumes persistentes
+volumes:
+  #volume gerenciado pelo docker
+  #monta volume gerenciado pelo docker - o host tera que acessar /var/lib/docker/volumes
+  volume-docker:
+
+  #volume bind
+  #mapear para volumes compartilhado - o host pode acessar diretamente
+  bind-host-ansible:
+    driver: local
+    driver_opts:
+      type: none #tipo de montagem none para bind
+      device: ./ansible/ansible_cw5 #caminho no host a ser montado
+      o: bind #opçao de montagem (bind, ro, rw)
+
+  bind-host-nginx:
+    driver: local
+    driver_opts:
+      type: none #tipo de montagem none para bind
+      device: ./nginx/ #caminho no host a ser montado
+      o: bind #opçao de montagem (bind, ro, rw)
+
+
+networks:
+  network-bridge:
+    driver: bridge #containers na mesma rede se enxergam
+    ipam:
+      config:
+        - subnet: 172.16.2.0/24
+          ip_range: 172.16.2.0/28 #2.1-14
+          gateway: 172.16.2.1
