@@ -1,0 +1,76 @@
+all:
+  children:
+    cw5:
+      hosts:
+        172.28.0.210:
+          vlans_config:
+            - vlanID: 4   # Positivos adicionam VLAN, negativos removem
+              description: "adm"
+              interface_vlan: -172.28.0.63/69 # Positivos adicionam/altera, negativos removem
+              ports_trunk: [5, 6]  # Positivos adicionam, negativos removem
+              ports_access: [-7, 8]
+              
+            - vlanID: 41   # Positivos adicionam VLAN, negativos removem
+              description: 
+              interface_vlan: +172.28.0.63/56 # Positivos adicionam/altera, negativos removem
+              ports_trunk: [5, 6]  # Positivos adicionam, negativos removem
+              ports_access: [-7, 8]
+            
+            - vlanID: 4094   # Positivos adicionam VLAN, negativos removem
+              description: 
+              interface_vlan: +172.28.0.63/56 # Positivos adicionam/altera, negativos removem
+              ports_trunk: [5, 6]  # Positivos adicionam, negativos removem
+              ports_access: [-7, 8]
+
+            - vlanID: 18   # Positivos adicionam VLAN, negativos removem
+              description: 
+              interface_vlan: +172.28.0.63/56 # Positivos adicionam/altera, negativos removem
+              ports_trunk: [5, 6]  # Positivos adicionam, negativos removem
+              ports_access: [-7, 8]
+
+            - vlanID: 34   # Positivos adicionam VLAN, negativos removem
+              description: "adm"
+              interface_vlan: +172.28.0.63/56 # Positivos adicionam/altera, negativos removem
+              ports_trunk: [45, 233]  # Positivos adicionam, negativos removem
+              ports_access: [-7, 8]
+
+
+          interfaces_config:
+            - port: 5
+              type: "access"
+              vlan: [17]
+              description: "Porta 1"
+              pvid: 17
+              voice: 900
+              dhcp_snoop: true
+              stp: "loop-protection"
+
+            - port: 6
+              type: "trunk"
+              description:
+              vlan: [5, 65]
+              pvid: 2
+              voice: -900
+              dhcp_snoop: false
+              stp: "root-protection"
+          
+
+        
+        172.28.0.155:
+          interfaces_config:
+            - port: 4
+              type: "trunk"
+              description: "Voice VLAN"
+              vlan: [900, 98]
+              pvid: 58
+              voice: -900
+              dhcp_snoop: true
+              stp: "edged"
+
+            - port: 8
+              type: "trunk"
+              description:
+
+              voice: 
+              dhcp_snoop: 
+              stp: 
