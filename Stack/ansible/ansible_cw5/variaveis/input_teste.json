@@ -1,10 +1,10 @@
 {
     "ANSIBLE_MODULE_ARGS": {
         
-        "username": "admin",
-        "password": "ufnpwl10cms",
+        "username": "UserDoSwitch",
+        "password": "senhaDoSwitch",
         "privilege": "512900",
-        "hostname": "172.28.0.210",
+        "hostname": "192.168.2.4",
 
         "vlans_config": [{  "vlanID": 4,   
                             "description": "de teste",
