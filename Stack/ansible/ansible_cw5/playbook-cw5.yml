@@ -1,0 +1,24 @@
+- name: Configuracao do Comware 5
+  hosts: cw5
+  gather_facts: no
+  connection: local
+
+  vars_files:
+    - variaveis/secrets.yml
+
+  tasks:
+    - name: Configuracao de Vlans
+      comware_vlan:
+        hostname: "{{ inventory_hostname }}"
+        username: "{{ ansible_ssh_user }}"
+        password: "{{ ansible_ssh_pass }}"
+        privilege: "{{ privilege_password}}"
+        vlans_config: "{{ hostvars[inventory_hostname].vlans_config }}"
+
+    - name: Configuracao de Interfaces
+      comware_interface:
+        hostname: "{{ inventory_hostname }}"
+        username: "{{ ansible_ssh_user }}"
+        password: "{{ ansible_ssh_pass }}"
+        privilege: "{{ privilege_password}}"
+        interfaces_config: "{{ hostvars[inventory_hostname].interfaces_config }}"
